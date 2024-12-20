@@ -6,7 +6,7 @@ use actix_web::{
 };
 use mime_guess;
 
-use crate::{AppState, StaticFiles};
+use crate::{SharedState, StaticFiles};
 
 #[get("/{filename:.*}")]
 async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
@@ -46,7 +46,7 @@ async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
 }
 
 #[post("/api/counter")]
-pub async fn counter(data: Data<AppState>) -> impl Responder {
+pub async fn counter(data: Data<SharedState>) -> impl Responder {
     let new_count = {
         let mut counter = data.counter.lock().unwrap();
         *counter += 1;
