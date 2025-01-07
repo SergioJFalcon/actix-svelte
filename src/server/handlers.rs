@@ -6,10 +6,11 @@ use actix_web::{
 };
 use mime_guess;
 
-use crate::{SharedState, StaticFiles};
+use crate::server::utils::{SharedState, StaticFiles};
+
 
 #[get("/{filename:.*}")]
-async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
+pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
     let filename = path.into_inner();
     
     // Skip if path starts with 'api'
