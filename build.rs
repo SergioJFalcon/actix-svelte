@@ -14,30 +14,11 @@ fn main() -> std::io::Result<()> {
         panic!("pnpm is not installed! install it first.");
     }
 
-    // // check diesel_cli installed
-    // if !check_program_installed("diesel") {
-    //     panic!("diesel_cli is not installed! installing it: 'cargo install diesel_cli --no-default-features --features sqlite'");
-    // }
-    // let env_file = std::path::Path::new(".env");
-    // if !env_file.exists() {
-    //     let current_dir = std::env::current_dir()?;
-    //     let database_url = current_dir.join("db.sqlite3");
-    //     std::fs::write(
-    //         ".env",
-    //         format!(
-    //             "DATABASE_URL = {}\nSTATIC_FILE_PATH = {}",
-    //             database_url.display(),
-    //             current_dir.join("client/build").display()
-    //         ),
-    //     )?;
-    // }
-
     #[cfg(not(debug_assertions))]
     {
-        println!("ATTEMPTING BUILDING CLIENT");
         return build_client();
     }
-    
+
     Ok(())
 }
 
