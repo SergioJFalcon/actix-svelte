@@ -36,3 +36,41 @@ You can build the project with cargo. The `build.rs` will automatically compile 
 ```bash
 cargo build --release
 ```
+
+### Windows Service
+
+Create service
+
+```bash
+sc.exe create "actix_example" binPath= "C:\Users\sfalcon\code\actix-svelte\target\release\actix-svelte.exe" type= own
+```
+
+Start Server
+
+```bash
+sc.exe start "actix_example"
+```
+
+Pause Server
+
+```bash
+sc.exe pause "actix_example"
+```
+
+Continue Server
+
+```bash
+sc.exe continue "actix_example"
+```
+
+Stop Actix Server
+
+```bash
+sc.exe stop "actix_example"
+```
+
+Delete Service
+
+```bash
+sc.exe delete "actix_example"
+```

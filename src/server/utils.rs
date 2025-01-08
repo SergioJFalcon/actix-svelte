@@ -28,7 +28,7 @@ impl AppState {
           counter: Mutex::new(0),
       })
   }
-  pub fn to_pretty_json(&self) -> Result<Vec<u8>, serde_json::Error> {
+  pub fn _to_pretty_json(&self) -> Result<Vec<u8>, serde_json::Error> {
       let serializable = SerializableAppState {
           app_name: &self.app_name,
           app_version: &self.app_version,

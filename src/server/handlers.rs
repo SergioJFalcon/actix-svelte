@@ -1,3 +1,5 @@
+use std::sync::atomic::Ordering;
+
 use actix_web::{
   get,
   post,
@@ -6,8 +8,7 @@ use actix_web::{
 };
 use mime_guess;
 
-use crate::server::utils::{SharedState, StaticFiles};
-
+use crate::{server::utils::{SharedState, StaticFiles}, PAUSED};
 
 #[get("/{filename:.*}")]
 pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
@@ -44,6 +45,15 @@ pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
             }
         }
     }
+}
+
+#[get("/api/health")]
+pub async fn health_check() -> impl Responder {
+  if PAUSED.load(Ordering::SeqCst) {
+      HttpResponse::ServiceUnavailable().body("Service is paused")
+  } else {
+      HttpResponse::Ok().body("Service is running")
+  }
 }
 
 #[post("/api/counter")]

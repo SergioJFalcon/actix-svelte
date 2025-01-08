@@ -10,10 +10,9 @@ mod handlers;
 mod utils;
 
 use utils::AppState;
-use handlers::{serve_static_files, counter};
+use handlers::{counter, health_check, serve_static_files};
 
-#[actix_web::main]
-pub async fn actix_server_app() -> std::io::Result<()> {
+pub async fn actix_server_app() -> actix_web::dev::Server {
     let hostname: &str = "localhost";
     let port: i32 = 8090;
     let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
@@ -22,13 +21,16 @@ pub async fn actix_server_app() -> std::io::Result<()> {
     println!("\t🚀 Server started successfully");
     println!("\t🌍 Listening on: http://{}:{}/", hostname, port);
 
-    HttpServer::new(move || {
+    let server_app: actix_web::dev::Server = HttpServer::new(move || {
         App::new()
             .app_data(shared_state.clone())
-            .service(serve_static_files)
+            .service(health_check)
             .service(counter)
+            .service(serve_static_files)
     })
-    .listen(listener)?
-    .run()
-    .await
+    .listen(listener).expect("Failed to listen on address")
+    .shutdown_timeout(5) // Give 5 seconds for graceful shutdown
+    .run();
+
+    server_app
 }
