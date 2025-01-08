@@ -3,7 +3,6 @@ use actix_web::{
   HttpServer,
   web::Data,
 };
-use actix_rt::signal;
 use std::sync::Arc;
 use std::net::TcpListener;
 
@@ -11,7 +10,7 @@ mod handlers;
 mod utils;
 
 use utils::AppState;
-use handlers::{serve_static_files, counter};
+use handlers::{counter, health_check, serve_static_files};
 
 pub async fn actix_server_app() -> actix_web::dev::Server {
     let hostname: &str = "localhost";
@@ -25,30 +24,13 @@ pub async fn actix_server_app() -> actix_web::dev::Server {
     let server_app: actix_web::dev::Server = HttpServer::new(move || {
         App::new()
             .app_data(shared_state.clone())
-            .service(serve_static_files)
+            .service(health_check)
             .service(counter)
+            .service(serve_static_files)
     })
     .listen(listener).expect("Failed to listen on address")
+    .shutdown_timeout(5) // Give 5 seconds for graceful shutdown
     .run();
 
     server_app
 }
-
-pub async fn actix_server_handle(server_app: &actix_web::dev::Server) -> actix_web::dev::ServerHandle {
-    server_app.handle()
-}
-
-pub async fn start_actix_server(server_app: actix_web::dev::Server) -> std::io::Result<()> {
-    // Run the server
-    server_app.await
-}
-
-// Spawn signal handlers
-// actix_rt::spawn(async move {
-//   // Wait for SIGTERM
-//   signal::ctrl_c().await.expect("Failed to listen for SIGTERM");
-//   println!("SIGTERM received, shutting down server");
-
-//   // Start graceful server shutdown
-//   srv.stop(true).await;
-// });

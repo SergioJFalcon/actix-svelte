@@ -1,141 +1,143 @@
 mod server;
 
-use std::ffi::OsString;
-use std::time::Duration;
+use actix_web::{web, App, HttpServer, Responder, HttpResponse};
 use windows_service::{
-  define_windows_service,
-  Result,
-  service_dispatcher,
-  service_control_handler::{self, ServiceControlHandlerResult},
-  service::{
-      ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus, ServiceType,
-  },
+    define_windows_service,
+    service::{
+        ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus, ServiceType,
+    },
+    service_control_handler::{self, ServiceControlHandlerResult},
+    service_dispatcher,
 };
-use actix_rt::signal;
+use std::sync::mpsc;
+use std::time::Duration;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use tokio::runtime::Runtime;
 
-const SERVICE_NAME: &str = "actix_svelte_service";
+// Service name
+const SERVICE_NAME: &str = "actix_example";
+// Global flag for shutdown coordination
+pub static RUNNING: AtomicBool = AtomicBool::new(true);
+pub static PAUSED: AtomicBool = AtomicBool::new(false);
 
-// Generate the windows service boilerplate.
-// The boilerplate contains the low-level service entry function (ffi_service_main) that parses
-// incoming service arguments into Vec<OsString> and passes them to user defined service
-// entry (my_service_main).
-#[cfg(windows)]
-define_windows_service!(ffi_service_main, my_service_main);
-
-#[cfg(windows)]
-pub fn my_service_main(_arguments: Vec<OsString>) {
-}
-// Service entry function which is called on background thread by the system with service
-// parameters. There is no stdout or stderr at this point so make sure to configure the log
-// output to file if needed.
-
-#[cfg(windows)]
-pub async fn run_service() -> Result<()>{
-    // Create a channel to be able to poll a stop event from the service worker loop.
-    let (shutdown_tx, shutdown_rx) = std::sync::mpsc::channel();
-
-    let server_app: actix_web::dev::Server = server::actix_server_app().await;
-    let server_handle: actix_web::dev::ServerHandle = server::actix_server_handle(&server_app).await;
-    let srv: actix_web::dev::ServerHandle = server_handle.clone();
+// Main service logic
+fn run_server(rx: mpsc::Receiver<ServiceControl>) -> Result<(), Box<dyn std::error::Error>> {
+    // Create a new tokio runtime
+    let rt: Runtime = Runtime::new()?;
     
-    // Set up the service control handler
-    let event_handler = move |control_event| -> ServiceControlHandlerResult {
-        match control_event {
-            // Notifies a service to report its current status information to the service
-            // control manager. Always return NoError even if not implemented.
-            ServiceControl::Interrogate => ServiceControlHandlerResult::NoError,
+    // Create a shutdown flag
+    let running: Arc<AtomicBool> = Arc::new(AtomicBool::new(true));
+    let running_clone: Arc<AtomicBool> = running.clone();
 
-            ServiceControl::Stop | ServiceControl::Shutdown => {
-              let shutdown_tx = shutdown_tx.clone();
-              let srv = srv.clone();
-              actix_rt::spawn(async move {
-                  shutdown_tx.send(()).unwrap();
-                  // Handle the shutdown signal with await
-                  let _ = signal::ctrl_c().await;
-                  let _ = srv.stop(true).await;
-              });
-              ServiceControlHandlerResult::NoError
-          },
+    // Spawn the Actix web server
+    rt.block_on(async move {
+        let server_app: actix_web::dev::Server = server::actix_server_app().await;
 
-            ServiceControl::UserEvent(code) => {
-              if code.to_raw() == 130 {
-                let shutdown_tx = shutdown_tx.clone();
-                let srv = srv.clone();
-                actix_rt::spawn(async move {
-                    shutdown_tx.send(()).unwrap();
-                    // Handle the shutdown signal with await
-                    let _ = signal::ctrl_c().await;
-                    let _ = srv.stop(true).await;
-                });
+        let srv: actix_web::dev::ServerHandle = server_app.handle();
+
+        // Spawn control message handler
+        tokio::spawn(async move {
+          while let Ok(control) = rx.recv() {
+              match control {
+                  ServiceControl::Stop => {
+                      running_clone.store(false, Ordering::SeqCst);
+                      srv.stop(true).await;
+                      break;
+                  }
+                  ServiceControl::Pause => {
+                      PAUSED.store(true, Ordering::SeqCst);
+                      // You could also pause accepting new connections here
+                      srv.pause().await;
+                  }
+                  ServiceControl::Continue => {
+                      PAUSED.store(false, Ordering::SeqCst);
+                      // You could resume accepting connections here
+                      srv.resume().await;
+                  }
+                  _ => {}
               }
-              ServiceControlHandlerResult::NoError
-            },
+          }
+        });
 
-            _ => ServiceControlHandlerResult::NoError,
-        }
-    };
-
-    let status_handle: service_control_handler::ServiceStatusHandle = service_control_handler::register(SERVICE_NAME, event_handler)
-        .expect("Failed to register service control handler");
-
-    // Tell the system that the service is running
-    status_handle
-        .set_service_status(ServiceStatus {
-            service_type: ServiceType::OWN_PROCESS,
-            current_state: ServiceState::Running,
-            controls_accepted: ServiceControlAccept::STOP | ServiceControlAccept::SHUTDOWN,
-            exit_code: ServiceExitCode::Win32(0),
-            checkpoint: 0,
-            wait_hint: Duration::default(),
-            process_id: None,
-        })
-        .expect("Failed to set service status");
-
-      server::start_actix_server(server_app).await.expect("Failed to start server");
-
-    // Tell the system that service has stopped.
-    status_handle.set_service_status(ServiceStatus {
-      service_type: ServiceType::OWN_PROCESS,
-      current_state: ServiceState::Stopped,
-      controls_accepted: ServiceControlAccept::empty(),
-      exit_code: ServiceExitCode::Win32(0),
-      checkpoint: 0,
-      wait_hint: Duration::default(),
-      process_id: None,
-    }).expect("Failed to set service status");
+        server_app.await?;
+        Ok::<(), std::io::Error>(())
+    })?;
 
     Ok(())
 }
 
-#[cfg(windows)]
-pub fn start_service() -> Result<()> {
-  // Register generated `ffi_service_main` with the system and start the service, blocking
-  // this thread until the service is stopped.
-  service_dispatcher::start(SERVICE_NAME, ffi_service_main)
+// Windows service implementation
+define_windows_service!(ffi_service_main, service_main);
+
+fn service_main(_arguments: Vec<std::ffi::OsString>) {
+    // Create a channel to coordinate shutdown
+    let (control_tx, control_rx) = mpsc::channel();
+
+    // Define the service control handler
+    let event_handler = move |control_event| -> ServiceControlHandlerResult {
+        let _ = control_tx.send(control_event);
+        match control_event {
+            ServiceControl::Stop => {
+                ServiceControlHandlerResult::NoError
+            }
+            ServiceControl::Pause => {
+                ServiceControlHandlerResult::NoError
+            }
+            ServiceControl::Continue => {
+                ServiceControlHandlerResult::NoError
+            }
+            _ => ServiceControlHandlerResult::NoError,
+        }
+    };
+
+    // Register the service control handler
+    let status_handle = service_control_handler::register(
+        SERVICE_NAME,
+        event_handler
+    ).unwrap();
+
+    // Tell the system that the service is running
+    status_handle.set_service_status(ServiceStatus {
+        service_type: ServiceType::OWN_PROCESS,
+        current_state: ServiceState::Running,
+        controls_accepted: ServiceControlAccept::STOP,
+        exit_code: ServiceExitCode::Win32(0),
+        checkpoint: 0,
+        wait_hint: Duration::default(),
+        process_id: None,
+    }).unwrap();
+
+    // Run the server
+    if let Err(e) = run_server(control_rx) {
+        // Log the error
+        eprintln!("Service error: {}", e);
+    }
+
+    // Tell the system that the service is stopped
+    status_handle.set_service_status(ServiceStatus {
+        service_type: ServiceType::OWN_PROCESS,
+        current_state: ServiceState::Stopped,
+        controls_accepted: ServiceControlAccept::empty(),
+        exit_code: ServiceExitCode::Win32(0),
+        checkpoint: 0,
+        wait_hint: Duration::default(),
+        process_id: None,
+    }).unwrap();
 }
 
+#[cfg(all(windows, not(debug_assertions)))]
+fn main() -> Result<(), windows_service::Error> {
+    // Start the service dispatcher
+    service_dispatcher::start(SERVICE_NAME, ffi_service_main)?;
+
+    Ok(())
+}
+
+#[cfg(debug_assertions)]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("Hello, world!");
-    #[cfg(not(debug_assertions))]
-    {
-        // Running in production/release mode as a windows service
-        // Start as Windows service
-        // service_dispatcher::start("MyActixService", ffi_service_main)
-        //     .expect("Failed to start service dispatcher");
-        start_service().expect("Failed to start service dispatcher");
-
-        return Ok(());
-    }
-
-    #[cfg(debug_assertions)]{
-        // Running in development mode
-        // server::actix_server_app().await
-        
-        let server_app: actix_web::dev::Server = server::actix_server_app().await;
-        let server_handle: actix_web::dev::ServerHandle = server::actix_server_handle(&server_app).await;
-        
-        server_app.await
-    }
-
+  let server_app: actix_web::dev::Server = server::actix_server_app().await;
+  
+  server_app.await
 }
