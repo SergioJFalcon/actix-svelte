@@ -1,3 +1,6 @@
+mod handlers;
+mod utils;
+
 use actix_web::{
   App,
   HttpServer,
@@ -6,11 +9,8 @@ use actix_web::{
 use std::sync::Arc;
 use std::net::TcpListener;
 
-mod handlers;
-mod utils;
-
+use handlers::{counter, get_app_state, health_check, serve_static_files};
 use utils::AppState;
-use handlers::{counter, health_check, serve_static_files};
 
 pub async fn actix_server_app() -> actix_web::dev::Server {
     let hostname: &str = "localhost";
@@ -25,6 +25,7 @@ pub async fn actix_server_app() -> actix_web::dev::Server {
         App::new()
             .app_data(shared_state.clone())
             .service(health_check)
+            .service(get_app_state)
             .service(counter)
             .service(serve_static_files)
     })

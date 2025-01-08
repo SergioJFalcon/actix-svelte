@@ -15,7 +15,7 @@ fn main() -> std::io::Result<()> {
     }
 
     #[cfg(not(debug_assertions))]
-    {
+    {  
         return build_client();
     }
 

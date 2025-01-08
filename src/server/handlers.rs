@@ -56,6 +56,16 @@ pub async fn health_check() -> impl Responder {
   }
 }
 
+#[get("/api/state")]
+pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
+    match data.to_pretty_json() {
+        Ok(json_data) => HttpResponse::Ok().body(json_data),
+        Err(_) => {
+            HttpResponse::InternalServerError().body("Error serializing app state")
+        }
+    }
+}
+
 #[post("/api/counter")]
 pub async fn counter(data: Data<SharedState>) -> impl Responder {
     let new_count = {
