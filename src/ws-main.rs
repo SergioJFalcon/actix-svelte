@@ -1,19 +1,19 @@
 mod server;
 
-use actix_web::web;
-use windows_service::{
-    define_windows_service,
-    service::{
-        ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus, ServiceType,
-    },
-    service_control_handler::{self, ServiceControlHandlerResult},
-    service_dispatcher,
-};
+use std::net::TcpListener;
+use tokio::runtime::Runtime;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use tokio::runtime::Runtime;
+use windows_service::{
+  define_windows_service,
+  service::{
+      ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus, ServiceType,
+  },
+  service_control_handler::{self, ServiceControlHandlerResult},
+  service_dispatcher,
+};
 
 // Service name
 const SERVICE_NAME: &str = "actix_example";
@@ -32,7 +32,11 @@ fn run_service_server(rx: mpsc::Receiver<ServiceControl>) -> Result<(), Box<dyn 
 
     // Spawn the Actix web server
     rt.block_on(async move {
-        let server_app: actix_web::dev::Server = server::actix_server_app().await;
+        let hostname: &str = env!("WINDOW_SERVICE_HOST");
+        let port: i32 = env!("WINDOW_SERVICE_PORT").parse().expect("WINDOW_SERVICE_PORT must be a number");
+        let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
+
+        let server_app: actix_web::dev::Server = server::actix_server_app(listener).await;
 
         let srv: actix_web::dev::ServerHandle = server_app.handle();
 
@@ -137,7 +141,11 @@ fn main() -> Result<(), windows_service::Error> {
 #[cfg(debug_assertions)]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-  let server_app: actix_web::dev::Server = server::actix_server_app().await;
+  let hostname: &str = env!("WINDOW_SERVICE_HOST");
+  let port: i32 = env!("WINDOW_SERVICE_PORT").parse().expect("WINDOW_SERVICE_PORT must be a number");
+  let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
+
+  let server_app: actix_web::dev::Server = server::actix_server_app(listener).await;
   
   server_app.await
 }
