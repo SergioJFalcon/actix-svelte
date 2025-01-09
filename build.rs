@@ -1,9 +1,19 @@
+use std::env;
 use std::process::Command;
 
-// Dev only build
 fn main() -> std::io::Result<()> {
+    let metadata: String = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let cargo_toml: String = std::fs::read_to_string(format!("{}/Cargo.toml", metadata)).unwrap();
+    
+    if let Some(env_section) = cargo_toml.split("[package.metadata.env]").nth(1) {
+      for line in env_section.lines().filter(|line| line.contains('=')) {
+          let parts: Vec<_> = line.split('=').collect();
+          let key: &str = parts[0].trim();
+          let value: &str = parts[1].trim().trim_matches('"');
+          println!("cargo:rustc-env={}={}", key, value);
+      }
+    }
     // build client as static files
-    //test
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=client/src/**");
     println!("cargo:rerun-if-changed=client/static/**");
@@ -15,8 +25,8 @@ fn main() -> std::io::Result<()> {
     }
 
     #[cfg(not(debug_assertions))]
-    {
-        return build_client();
+    {  
+        let _ = build_client();
     }
 
     Ok(())
