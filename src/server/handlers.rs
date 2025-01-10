@@ -68,12 +68,14 @@ pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
 
 #[post("/api/counter")]
 pub async fn counter(data: Data<SharedState>) -> impl Responder {
-    let new_count = {
-        let mut counter = data.counter.lock().unwrap();
-        *counter += 1;
-        println!("Counter: {}", *counter);
-        counter
-    };
-    println!("Data: {:?}", data);
-    HttpResponse::Ok().body(new_count.to_string())
+    data.counter.fetch_add(1, Ordering::Relaxed);
+
+    let local_count: usize = data.local_count.get();
+    data.local_count.set(local_count + 1);
+
+    data.global_count.fetch_add(1, Ordering::Relaxed);
+    
+    HttpResponse::Ok().body(
+      data.counter.load(Ordering::Relaxed).to_string()
+    )
 }
