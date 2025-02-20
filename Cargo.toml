@@ -14,13 +14,28 @@ default-run = "actix-svelte"
 actix-files = "0.6.6"
 actix-rt = "2.10.0"
 actix-web = "4.9.0"
+config = "0.15.8"
+dotenv = "0.15.0"
 futures = "0.3.31"
 mime_guess = "2.0.5"
 rust-embed = { version = "8.5.0", features = ["actix", "actix-web"] }
-serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.135"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.139"
 tokio = { version = "1.43.0", features = ["full"] }
-windows-service = "0.7.0"
+windows-service = "0.8.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [
+    "fmt",
+    "std",
+    "env-filter",
+    "registry",
+    'json',
+    'tracing-log',
+] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[dev-dependencies]
+fake = "4.0.0"
 
 [package.metadata.env]
 HOST = "127.0.0.1"

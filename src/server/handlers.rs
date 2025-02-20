@@ -10,9 +10,10 @@ use mime_guess;
 
 use crate::{server::utils::{SharedState, StaticFiles}, PAUSED};
 
+#[tracing::instrument]
 #[get("/{filename:.*}")]
 pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
-    let filename = path.into_inner();
+    let filename: String = path.into_inner();
     
     // Skip if path starts with 'api'
     if filename.starts_with("api/") {
@@ -47,17 +48,29 @@ pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
     }
 }
 
+#[tracing::instrument]
 #[get("/api/health")]
 pub async fn health_check() -> impl Responder {
-  if PAUSED.load(Ordering::SeqCst) {
-      HttpResponse::ServiceUnavailable().body("Service is paused")
-  } else {
-      HttpResponse::Ok().body("Service is running")
-  }
+    tracing::event!(target: "backend", tracing::Level::INFO, "Accessing health-check endpoint.");
+    if PAUSED.load(Ordering::SeqCst) {
+        HttpResponse::ServiceUnavailable().body("Service is paused")
+    } else {
+        HttpResponse::Ok().body("Service is running")
+    }
 }
 
+#[tracing::instrument(
+  name = "Get app state",
+  skip(data),
+  fields(
+    counter = data.counter.load(Ordering::Relaxed),
+    local_count = data.local_count.get(),
+    global_count = data.global_count.load(Ordering::Relaxed)
+  )
+)]
 #[get("/api/state")]
 pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
+    tracing::event!(target: "backend", tracing::Level::INFO, "Accessing app state endpoint.");
     match data.to_pretty_json() {
         Ok(json_data) => HttpResponse::Ok().body(json_data),
         Err(_) => {
@@ -66,8 +79,18 @@ pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
     }
 }
 
+#[tracing::instrument(
+  name = "Increment counter",
+  skip(data),
+  fields(
+    counter = data.counter.load(Ordering::Relaxed),
+    local_count = data.local_count.get(),
+    global_count = data.global_count.load(Ordering::Relaxed)
+  )
+)]
 #[post("/api/counter")]
 pub async fn counter(data: Data<SharedState>) -> impl Responder {
+    tracing::event!(target: "backend", tracing::Level::INFO, "Accessing counter endpoint.");
     data.counter.fetch_add(1, Ordering::Relaxed);
 
     let local_count: usize = data.local_count.get();

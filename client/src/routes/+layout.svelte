@@ -1,5 +1,6 @@
 <script lang="ts">
-
+  import "../app.css";
+  
   let { data, children }: { data: any; children?: any } = $props();
 </script>
 
@@ -8,7 +9,7 @@
     <nav class="h-full w-full flex flex-row justify-between">
       <div class="h-full w-[10%]"></div>
       <div class="h-full w-[80%] text-center">
-        <h2 class="text-6xl font-bold">{data.app_name}</h2>
+        <h2 class="text-6xl font-bold">{data.app_name} - {data.app_version}</h2>
       </div>
     </nav>
   </header>

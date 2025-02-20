@@ -36,7 +36,7 @@ fn run_service_server(rx: mpsc::Receiver<ServiceControl>) -> Result<(), Box<dyn 
         let port: i32 = env!("WINDOW_SERVICE_PORT").parse().expect("WINDOW_SERVICE_PORT must be a number");
         let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
 
-        let server_app: actix_web::dev::Server = server::actix_server_app(listener).await;
+        let server_app: actix_web::dev::Server = server::actix_server_app(listener).await?;
 
         let srv: actix_web::dev::ServerHandle = server_app.handle();
 
@@ -145,7 +145,7 @@ async fn main() -> std::io::Result<()> {
   let port: i32 = env!("WINDOW_SERVICE_PORT").parse().expect("WINDOW_SERVICE_PORT must be a number");
   let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
 
-  let server_app: actix_web::dev::Server = server::actix_server_app(listener).await;
+  let server_app: actix_web::dev::Server = server::actix_server_app(listener).await?;
   
   server_app.await
 }
