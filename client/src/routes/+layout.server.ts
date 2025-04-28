@@ -21,7 +21,7 @@ export const load = async({ fetch }: ServerLoadEvent) => {
   } catch (error) {
     console.error("Error loading data:", error);
     return {
-        app_name: 'Actix Svelte Example',
+        app_name: 'Actix Svelte',
         app_version: '0.0.0',
         app_description: '',
     };

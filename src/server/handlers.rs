@@ -79,26 +79,27 @@ pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
     }
 }
 
-#[tracing::instrument(
-  name = "Increment counter",
-  skip(data),
-  fields(
-    counter = data.counter.load(Ordering::Relaxed),
-    local_count = data.local_count.get(),
-    global_count = data.global_count.load(Ordering::Relaxed)
-  )
-)]
 #[post("/api/counter")]
 pub async fn counter(data: Data<SharedState>) -> impl Responder {
+    println!("###############################################################################");
     tracing::event!(target: "backend", tracing::Level::INFO, "Accessing counter endpoint.");
-    data.counter.fetch_add(1, Ordering::Relaxed);
-
-    let local_count: usize = data.local_count.get();
-    data.local_count.set(local_count + 1);
-
-    data.global_count.fetch_add(1, Ordering::Relaxed);
     
-    HttpResponse::Ok().body(
-      data.counter.load(Ordering::Relaxed).to_string()
-    )
+		let new_count = {
+      let mut counter = data.counter.lock().unwrap();
+      *counter += 1;
+      counter
+  };
+
+  HttpResponse::Ok().body(new_count.to_string())
+    // data.counter.fetch_add(1, Ordering::Relaxed);
+
+    // let local_count: usize = data.local_count.get();
+    // data.local_count.set(local_count + 1);
+
+    // data.global_count.fetch_add(1, Ordering::Relaxed);
+    // println!("Global count: {}", data.global_count.load(Ordering::Relaxed));
+    // println!("###############################################################################");
+    // HttpResponse::Ok().body(
+    //   data.counter.load(Ordering::Relaxed).to_string()
+    // )
 }

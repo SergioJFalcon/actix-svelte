@@ -59,17 +59,16 @@ impl Application {
 
 
 pub async fn actix_server_app(listener: TcpListener) -> Result<Server> {
-    let shared_state: AppState = AppState::new("Actix Svelte Template Server");
+    let shared_state: AppState = AppState::new("Actix Svelte Template");
 
     let server_app: Server = HttpServer::new(move || {
         App::new()
             .app_data(Data::new(shared_state.clone()))
+            .wrap(actix_web::middleware::Logger::default())
             .service(health_check)
             .service(get_app_state)
             .service(counter)
             .service(serve_static_files)
-            // Logging middleware
-            .wrap(actix_web::middleware::Logger::default())
     })
     .listen(listener).expect("Failed to listen on address")
     .shutdown_timeout(5) // Give 5 seconds for graceful shutdown
