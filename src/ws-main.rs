@@ -1,7 +1,9 @@
 mod server;
 
 use std::net::TcpListener;
+use server::build_server_app;
 use tokio::runtime::Runtime;
+use tokio_util::sync::CancellationToken;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -34,9 +36,9 @@ fn run_service_server(rx: mpsc::Receiver<ServiceControl>) -> Result<(), Box<dyn 
     rt.block_on(async move {
         let hostname: &str = env!("WINDOW_SERVICE_HOST");
         let port: i32 = env!("WINDOW_SERVICE_PORT").parse().expect("WINDOW_SERVICE_PORT must be a number");
-        let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
-
-        let server_app: actix_web::dev::Server = server::actix_server_app(listener).await?;
+        let listener: TcpListener = TcpListener::bind(format!("{}:{}", hostname, port)).expect("Failed to bind address");
+        let cancel_token: CancellationToken = CancellationToken::new();
+        let server_app: actix_web::dev::Server = build_server_app(listener, cancel_token.clone()).await?;
 
         let srv: actix_web::dev::ServerHandle = server_app.handle();
 
@@ -141,11 +143,13 @@ fn main() -> Result<(), windows_service::Error> {
 #[cfg(debug_assertions)]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-  let hostname: &str = env!("WINDOW_SERVICE_HOST");
-  let port: i32 = env!("WINDOW_SERVICE_PORT").parse().expect("WINDOW_SERVICE_PORT must be a number");
+  let hostname: String = dotenvy::var("WINDOW_SERVICE_HOST").expect("HOST must be set");
+  let port: u16 = dotenvy::var("WINDOW_SERVICE_PORT")
+    .unwrap_or_else(|_| "5000".to_string()) // Default to 5000 if nothing is set
+    .parse::<u16>().expect("WINDOW_SERVICE_PORT must be a number");
   let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
+  let cancel_token: CancellationToken = CancellationToken::new();
+  let server_app: server::Application = server::Application::build(hostname, port).await?;
 
-  let server_app: actix_web::dev::Server = server::actix_server_app(listener).await?;
-  
-  server_app.await
+  server_app.run_until_stopped().await
 }

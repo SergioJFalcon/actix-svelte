@@ -1,5 +1,3 @@
-use std::sync::atomic::Ordering;
-
 use actix_web::{
   get,
   post,
@@ -7,6 +5,7 @@ use actix_web::{
   HttpResponse, Responder, Result
 };
 use mime_guess;
+use std::sync::atomic::Ordering;
 
 use crate::{server::utils::{SharedState, StaticFiles}, PAUSED};
 
@@ -48,8 +47,14 @@ pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
     }
 }
 
-#[tracing::instrument]
-#[get("/api/health")]
+#[utoipa::path(
+	get,
+	path = "/api/health",
+	responses(
+		(status = 200, description="Returns the health status of the application"),
+	)
+)]
+#[get("/health")]
 pub async fn health_check() -> impl Responder {
     tracing::event!(target: "backend", tracing::Level::INFO, "Accessing health-check endpoint.");
     if PAUSED.load(Ordering::SeqCst) {
@@ -59,47 +64,38 @@ pub async fn health_check() -> impl Responder {
     }
 }
 
-#[tracing::instrument(
-  name = "Get app state",
-  skip(data),
-  fields(
-    counter = data.counter.load(Ordering::Relaxed),
-    local_count = data.local_count.get(),
-    global_count = data.global_count.load(Ordering::Relaxed)
-  )
+#[utoipa::path(
+	get,
+	path = "/api/state",
+	responses(
+		(status = 200, description="Returns the current state of the application"),
+	)
 )]
-#[get("/api/state")]
+#[get("state")]
 pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
-    tracing::event!(target: "backend", tracing::Level::INFO, "Accessing app state endpoint.");
-    match data.to_pretty_json() {
-        Ok(json_data) => HttpResponse::Ok().body(json_data),
-        Err(_) => {
-            HttpResponse::InternalServerError().body("Error serializing app state")
-        }
-    }
+    let json: crate::server::utils::SerializableAppState<'_> = data.to_serializable().await;
+
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .body(serde_json::to_string(&json).unwrap())
 }
 
-#[post("/api/counter")]
+#[utoipa::path(
+	post,
+	path = "/api/counter",
+	responses(
+		(status = 200, description="Returns the updated counter value"),
+	),
+	tag = "counter"
+)]
+#[post("counter")]
 pub async fn counter(data: Data<SharedState>) -> impl Responder {
-    println!("###############################################################################");
-    tracing::event!(target: "backend", tracing::Level::INFO, "Accessing counter endpoint.");
-    
-		let new_count = {
-      let mut counter = data.counter.lock().unwrap();
-      *counter += 1;
-      counter
-  };
+    let new_count: i32 = {
+        let mut counter = data.counter.write().await;
+        *counter += 1;
 
-  HttpResponse::Ok().body(new_count.to_string())
-    // data.counter.fetch_add(1, Ordering::Relaxed);
+        counter.clone()
+    };
 
-    // let local_count: usize = data.local_count.get();
-    // data.local_count.set(local_count + 1);
-
-    // data.global_count.fetch_add(1, Ordering::Relaxed);
-    // println!("Global count: {}", data.global_count.load(Ordering::Relaxed));
-    // println!("###############################################################################");
-    // HttpResponse::Ok().body(
-    //   data.counter.load(Ordering::Relaxed).to_string()
-    // )
+    HttpResponse::Ok().body(new_count.to_string())
 }

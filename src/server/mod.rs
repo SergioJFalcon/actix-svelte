@@ -1,78 +1,113 @@
-mod handlers;
+mod api;
 mod utils;
 
-use actix_web::{
-  App,
-  dev::Server,
-  HttpServer,
-  web::Data,
-};
+use actix_cors::Cors;
+use actix_web::{App, HttpServer, middleware, web::Data};
+use actix_web::{http, web};
 use std::io::Result;
 use std::net::TcpListener;
-
-use handlers::{counter, get_app_state, health_check, serve_static_files};
+use std::sync::Arc;
+use tokio::signal;
+use tokio_util::sync::CancellationToken;
 use utils::AppState;
-use crate::settings::Settings;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 pub struct Application {
-  host: String,
-  port: u16,
-  server: Server,
+    pub hostname: String,
+    pub port: u16,
+    pub server: actix_web::dev::Server,
+    pub cancel_token: CancellationToken,
 }
 impl Application {
-  pub async fn build(
-      settings: Settings,
-  ) -> Result<Self> {
-      let address: String = format!(
-          "{}:{}",
-          settings.application.host, settings.application.port
-      );
+    pub async fn build(hostname: String, port: u16) -> Result<Self> {
+        let listener: TcpListener =
+            TcpListener::bind(format!("{}:{}", hostname, port)).expect("Failed to bind address");
+        let cancel_token: CancellationToken = CancellationToken::new();
+        let server: actix_web::dev::Server = build_server_app(listener, cancel_token.clone()).await?;
 
-      let listener: TcpListener = std::net::TcpListener::bind(&address)?;
-      let local_addr: std::net::SocketAddr = listener.local_addr().unwrap();
-      let host: String = if local_addr.ip().to_string() == "::1" { format!("localhost") } else { local_addr.ip().to_string() };
-      let port: u16 = listener.local_addr().unwrap().port();
+        Ok(Self {
+            hostname,
+            port,
+            server,
+            cancel_token,
+        })
+    }
 
-      println!("###SERVER BUILD: {:?}", settings);
+    pub fn hostname(&self) -> String {
+        self.hostname.clone()
+    }
 
-      let server: Server = actix_server_app(listener).await?;
+    pub fn port(&self) -> u16 {
+        self.port
+    }
 
-      Ok(Self { host, port, server })
-  }
+    pub async fn run_until_stopped(self) -> Result<()> {
+        println!("\n\t✅ Database connected successfully");
+        println!("\t🚀 Server started successfully");
+        println!(
+            "\t🌍 Listening on: http://{}:{}",
+            self.hostname(),
+            self.port()
+        );
+        println!(
+            "\t🔗 Swagger Docs: http://{}:{}/api/swagger-ui/#/\n",
+            self.hostname(),
+            self.port()
+        );
 
-  pub fn host(&self) -> &str {
-      &self.host
-  }
+        // Start listening for shutdown
+        let shutdown_signal = async {
+            signal::ctrl_c().await.expect("Failed to listen for ctrl_c");
+            self.cancel_token.cancel(); // Notify all tasks
+            println!("Shutdown signal received");
+        };
 
-  pub fn port(&self) -> u16 {
-      self.port
-  }
+        // Run the server and shutdown signal in parallel
+        tokio::select! {
+                _ = self.server => Ok(()),
+                _ = shutdown_signal => Ok(())
+        }
 
-  pub async fn run_until_stopped(self) -> Result<()> {
-      println!("\t🚀 Server started successfully");
-      println!("\t🌍 Listening on: http://{}:{}/", self.host, self.port);
-      println!("\t🛑 Press <Ctrl-C> to stop");
-
-      self.server.await
-  }
+        // self.server.await
+        // Ok(())
+    }
 }
 
+pub async fn build_server_app(
+    listener: TcpListener,
+    _cancel_token: CancellationToken,
+) -> Result<actix_web::dev::Server> {
+    let app_name: String = dotenvy::var("APP_NAME").unwrap_or_else(|_| "Default Room Condition Status".to_string());
+    let shared_state: Data<Arc<AppState>> = Data::new(AppState::new(app_name.as_str()));
 
-pub async fn actix_server_app(listener: TcpListener) -> Result<Server> {
-    let shared_state: AppState = AppState::new("Actix Svelte Template");
+    let openapi: utoipa::openapi::OpenApi = api::swagger::ApiDocumentation::openapi();
 
-    let server_app: Server = HttpServer::new(move || {
+    let server_app: actix_web::dev::Server = HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(shared_state.clone()))
-            .wrap(actix_web::middleware::Logger::default())
-            .service(health_check)
-            .service(get_app_state)
-            .service(counter)
-            .service(serve_static_files)
+            .app_data(shared_state.clone())
+            .wrap(middleware::Logger::default())
+            .wrap(
+                Cors::default()
+                    .allowed_origin("http://localhost:5173")
+                    .allowed_methods(vec!["GET"])
+                    .allowed_headers(vec![http::header::CONTENT_TYPE])
+                    .max_age(3600),
+            )
+            .service(
+                SwaggerUi::new("/api/swagger-ui/{_:.*}")
+                    .url("/api-docs/openapi.json", openapi.clone()),
+            )
+            .service(
+                web::scope("/api")
+                    .configure(api::routes::app_services)
+            )
+            .service(api::handlers::serve_static_files)
     })
-    .listen(listener).expect("Failed to listen on address")
-    .shutdown_timeout(5) // Give 5 seconds for graceful shutdown
-    .workers(1) 
+    .listen(listener)
+    .expect("Failed to listen on address")
+    .workers(1)
+    .shutdown_timeout(5)
     .run();
 
     Ok(server_app)
