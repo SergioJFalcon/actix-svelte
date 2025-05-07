@@ -78,7 +78,7 @@ pub async fn build_server_app(
     listener: TcpListener,
     _cancel_token: CancellationToken,
 ) -> Result<actix_web::dev::Server> {
-    let app_name: String = dotenvy::var("APP_NAME").unwrap_or_else(|_| "Default Room Condition Status".to_string());
+    let app_name: String = dotenvy::var("APP_NAME").unwrap_or_else(|_| "App Template".to_string());
     let shared_state: Data<Arc<AppState>> = Data::new(AppState::new(app_name.as_str()));
 
     let openapi: utoipa::openapi::OpenApi = api::swagger::ApiDocumentation::openapi();

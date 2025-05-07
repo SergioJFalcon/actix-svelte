@@ -1,5 +1,4 @@
 import type { ServerLoadEvent } from "@sveltejs/kit";
-
 export const load = async({ fetch }: ServerLoadEvent) => {
   console.log("Loading data from server");
   const environment = import.meta.env.MODE;
@@ -13,11 +12,6 @@ export const load = async({ fetch }: ServerLoadEvent) => {
     const data = await response.json();
 
     return data;
-  //   return {
-  //     app_name: 'Actix Svelte Example',
-  //     app_version: '0.0.0',
-  //     app_description: '',
-  // };
   } catch (error) {
     console.error("Error loading data:", error);
     return {
@@ -27,3 +21,16 @@ export const load = async({ fetch }: ServerLoadEvent) => {
     };
   }
 };
+
+// export const load = async () => {
+//   console.log("Loading data from server");
+//   const environment = import.meta.env.MODE;
+//   console.log("Environment: ", environment);
+//   return {
+//       app_name: 'Default Clean Room Dashboard',
+//       app_version: '2.0.0',
+//       app_description: 'A clean room dashboard',
+//       counter: 0,
+//       global_counter: 0
+//   };
+// };

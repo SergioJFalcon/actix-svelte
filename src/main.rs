@@ -23,6 +23,9 @@ async fn main() -> std::io::Result<()> {
         .unwrap_or_else(|_| "5000".to_string()) // Default to 5000 if nothing is set
         .parse::<u16>()
         .expect("PORT must be a number");
+    
+    tracing::info!("WHAT IS THE HOST: {}", hostname);
+    tracing::info!("WHAT IS THE PORT: {}", port);
 
     let application: server::Application = server::Application::build(hostname, port).await?;
     tracing::event!(target: "backend", tracing::Level::INFO, "Listening on http://127.0.0.1:{}/", application.port());
