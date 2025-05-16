@@ -37,6 +37,23 @@ You can build the project with cargo. The `build.rs` will automatically compile 
 cargo build --release
 ```
 
+## Create SQlite Database
+
+    Make sure that sqlx-cli was installed
+    cargo install sqlx-cli
+
+    Make sure database URL in environment variable
+    DATABASE_URL="sqlite:database.db"
+
+    Create the databae
+        cargo sqlx database create
+
+    Run sql migrations
+        cargo sqlx migrate run --source database/migrations
+
+    Add sql migration
+        cargo sqlx migrate add <name>
+
 ### Windows Service
 
 Create service

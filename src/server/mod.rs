@@ -1,17 +1,74 @@
-mod api;
-mod utils;
+pub mod api;
+pub mod utils;
 
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, middleware, web::Data};
 use actix_web::{http, web};
+use sqlx::{Pool, Sqlite, SqlitePool};
 use std::io::Result;
 use std::net::TcpListener;
-use std::sync::Arc;
 use tokio::signal;
 use tokio_util::sync::CancellationToken;
-use utils::AppState;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+
+use rust_embed::RustEmbed;
+use serde::Serialize;
+use std::{
+  sync::{
+    atomic::{AtomicUsize, Ordering}, 
+    Arc
+  }
+};
+use tokio::sync::RwLock;
+
+#[derive(RustEmbed)]
+#[folder = "client/build"]
+pub struct StaticFiles;
+
+#[derive(Debug)]
+pub struct DatabaseState {
+    pub pool: Pool<Sqlite>,
+}
+
+#[derive(Debug)]
+pub struct AppState {
+    pub app_name: String,
+    pub app_version: String,
+    pub counter: RwLock<i32>,
+    pub global_count: RwLock<AtomicUsize>,
+}
+
+// Serializable version of the struct
+#[derive(Serialize)]
+pub struct SerializableAppState<'a> {
+    app_name: &'a str,
+    app_version: &'a str,
+    counter: i32,
+    global_counter: usize,
+}
+impl AppState {
+  pub fn new(app_name: &str) -> SharedState {
+      Arc::new(AppState {
+          app_name: app_name.to_string(),
+          app_version: env!("CARGO_PKG_VERSION").to_string(),
+          // counter: Arc::new(AtomicUsize::new(0)),
+          counter: RwLock::new(0),
+          global_count: RwLock::new(AtomicUsize::new(0)),
+      })
+  }
+  
+  pub async fn to_serializable(&self) -> SerializableAppState {
+    SerializableAppState {
+        app_name: &self.app_name,
+        app_version: &self.app_version,
+        counter: *self.counter.read().await,
+        global_counter: self.global_count.read().await.load(Ordering::SeqCst),
+    }
+}
+}
+
+pub type SharedState = Arc<AppState>;
 
 pub struct Application {
     pub hostname: String,
@@ -20,7 +77,7 @@ pub struct Application {
     pub cancel_token: CancellationToken,
 }
 impl Application {
-    pub async fn build(hostname: String, port: u16) -> Result<Self> {
+    pub async fn build(hostname: String, port: u16, _test_pool: Option<Pool<Sqlite>>) -> Result<Self> {
         let listener: TcpListener =
             TcpListener::bind(format!("{}:{}", hostname, port)).expect("Failed to bind address");
         let cancel_token: CancellationToken = CancellationToken::new();
@@ -78,6 +135,9 @@ pub async fn build_server_app(
     listener: TcpListener,
     _cancel_token: CancellationToken,
 ) -> Result<actix_web::dev::Server> {
+    let database_url: String = dotenvy::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let pool: Pool<Sqlite> = SqlitePool::connect(&database_url).await.expect("Failed to connect to database");
+    let db_state: Data<DatabaseState> = Data::new(DatabaseState { pool: pool.clone() });
     let app_name: String = dotenvy::var("APP_NAME").unwrap_or_else(|_| "App Template".to_string());
     let shared_state: Data<Arc<AppState>> = Data::new(AppState::new(app_name.as_str()));
 
@@ -85,6 +145,7 @@ pub async fn build_server_app(
 
     let server_app: actix_web::dev::Server = HttpServer::new(move || {
         App::new()
+            .app_data(db_state.clone())
             .app_data(shared_state.clone())
             .wrap(middleware::Logger::default())
             .wrap(
@@ -101,6 +162,7 @@ pub async fn build_server_app(
             .service(
                 web::scope("/api")
                     .configure(api::routes::app_services)
+                    .configure(api::routes::auth_services)
             )
             .service(api::handlers::serve_static_files)
     })

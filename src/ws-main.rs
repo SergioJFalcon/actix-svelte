@@ -149,7 +149,7 @@ async fn main() -> std::io::Result<()> {
     .parse::<u16>().expect("WINDOW_SERVICE_PORT must be a number");
   let listener: TcpListener = TcpListener::bind(format!("{hostname}:{port}")).expect("Failed to bind to address");
   let cancel_token: CancellationToken = CancellationToken::new();
-  let server_app: server::Application = server::Application::build(hostname, port).await?;
+  let server_app: server::Application = server::Application::build(hostname, port, None).await?;
 
   server_app.run_until_stopped().await
 }

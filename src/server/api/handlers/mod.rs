@@ -7,7 +7,9 @@ use actix_web::{
 use mime_guess;
 use std::sync::atomic::Ordering;
 
-use crate::{server::utils::{SharedState, StaticFiles}, PAUSED};
+use crate::{server::{SerializableAppState, SharedState, StaticFiles}, PAUSED};
+
+pub mod auth;
 
 #[tracing::instrument]
 #[get("/{filename:.*}")]
@@ -73,7 +75,7 @@ pub async fn health_check() -> impl Responder {
 )]
 #[get("state")]
 pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
-    let json: crate::server::utils::SerializableAppState<'_> = data.to_serializable().await;
+    let json: SerializableAppState<'_> = data.to_serializable().await;
 
     HttpResponse::Ok()
         .content_type("application/json")

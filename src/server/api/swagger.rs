@@ -1,6 +1,7 @@
 use utoipa::OpenApi;
 use super::handlers::{
-		__path_counter, __path_get_app_state, __path_health_check
+		__path_counter, __path_get_app_state, __path_health_check,
+		auth::{__path_register_user, __path_login}
 };
 
 #[derive(OpenApi)]
@@ -13,7 +14,9 @@ use super::handlers::{
 		paths(
 			get_app_state,
 			counter,
-			health_check
+			health_check,
+			register_user,
+			login
 		),
 		components(
 			schemas(
