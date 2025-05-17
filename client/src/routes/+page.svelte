@@ -1,22 +1,29 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   let { data, children }: { data: any; children?: any } = $props();
-
-  let count = $state(0);
-
-  const counter = async () => {
+  let counter_data = $state(data.counter);
+  const incrementCounter = async () => {
     const res = await fetch('/api/counter', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       }
-    }).then(res => res.json()).then(data => {
-      count = data;
+    }).then(res => res.json()).then(updated_data => {
+      counter_data = updated_data;
     });
     console.log(data);
   };
+  onMount(() => {
+    console.log("Component mounted");
+    console.log("Data:", data);
+  });
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-<p>Counter: {count}</p>
-<button onclick={counter}>Increment Counter</button>
+<main class="">
+  <div class="">
+    <p>Counter: {counter_data}</p>
+    <button onclick={incrementCounter} class="">Increment Counter</button>
+    <p>Data: {JSON.stringify(data)}</p>
+  </div>
+</main>

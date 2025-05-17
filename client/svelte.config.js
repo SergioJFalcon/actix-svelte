@@ -15,7 +15,7 @@ const config = {
       // where to output the static site
       pages: 'build',
       assets: 'build',
-      fallback: undefined,
+			fallback: 'index.html',
       precompress: false,
 			strict: true
     })
