@@ -1,3 +1,4 @@
+use actix_web::{web, HttpRequest};
 use chrono::NaiveDateTime;
 // use rusty_paseto::v4::{
 //     decode, encode, public::Ed25519KeyPair, public::PublicKey, public::SecretKey, Claims,
@@ -25,15 +26,21 @@ pub struct CreateUser {
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct LoginUser {
     pub username: String,
-    pub password: String
+    pub password: String,
+    // pub token: Option<String>, // Optional token for authentication
 }
 
 // --- Authentication Data ---
-
-#[derive(Debug, Serialize, Deserialize)]
-struct AuthClaims {
-    user_id: i64,
+// Define a struct for the claims you want to include in the token
+#[derive(Serialize, Deserialize)]
+pub struct Claims {
+    pub user_id: i64, // Assuming your User model has an ID
+    pub username: String,
+    // You can add other relevant claims here, like roles, etc.
+    pub exp: i64, // Expiration timestamp
 }
+
+
 
 // --- Token Generation and Decoding ---
 // pub fn generate_token(user: &User, config: &AppConfig) -> Result<String, PasetoError> {

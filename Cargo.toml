@@ -34,8 +34,9 @@ utoipa-swagger-ui = {version="9.0.1", features=["actix-web"]}
 uuid = { version = "1.16.0", features = ["v4"] }
 sqlx = { version = "0.8.3", features = [ "chrono", "sqlite", "runtime-tokio", "tls-native-tls" ] }
 argon2 = { version = "0.5.3", features = ["std"] }
-rusty_paseto = "0.7.2"
+rusty_paseto = { version = "0.7.2", features = ["batteries_included", "v4_public"] }
 chrono = { version = "0.4.41", features = ["serde"] }
+hex = "0.4.3"
 
 [dev-dependencies]
 fake = "4.3.0"

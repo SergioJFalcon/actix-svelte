@@ -1,0 +1,50 @@
+01:55:23  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 13948
+01:55:23  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+01:55:23  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+01:55:23  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+01:55:23 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+01:55:23  INFO actix_svelte: src\main.rs:18: Logging initialized successfully
+01:55:23  INFO actix_server::builder: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+01:55:23  INFO backend: src\main.rs:28: Listening on http://127.0.0.1:8041/
+01:55:23  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+01:55:23  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041
+02:31:48  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 12448
+02:31:48  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+02:31:48  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+02:31:48  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+02:31:48 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+02:31:48  INFO actix_svelte: src\main.rs:18: Logging initialized successfully
+02:31:48  INFO actix_server::builder: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+02:31:48  INFO backend: src\main.rs:28: Listening on http://127.0.0.1:8041/
+02:31:48  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+02:31:48  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041
+02:32:36  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 3660
+02:32:36  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+02:32:36  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+02:32:36  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+02:32:36 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+02:32:36  INFO actix_svelte: src\main.rs:18: Logging initialized successfully
+02:32:36  INFO actix_server::builder: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+02:32:36  INFO backend: src\main.rs:28: Listening on http://127.0.0.1:8041/
+02:32:36  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+02:32:36  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/ HTTP/1.1" 200 734 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.021457    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-ui.css HTTP/1.1" 200 152071 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.025449    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/index.css HTTP/1.1" 200 202 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.011588    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-ui-bundle.js HTTP/1.1" 200 1452753 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.184923    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-ui-standalone-preset.js HTTP/1.1" 200 230293 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.091877    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-initializer.js HTTP/1.1" 200 528 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.020105    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api-docs/openapi.json HTTP/1.1" 200 1699 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.000310    
+02:33:39  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/favicon-32x32.png HTTP/1.1" 200 628 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.001154    
+02:33:44  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/state HTTP/1.1" 200 93 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.000228    
+02:34:28  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 25988
+02:34:28  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+02:34:28  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+02:34:28  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+02:34:28 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+02:34:28  INFO actix_svelte: src\main.rs:18: Logging initialized successfully
+02:34:28  INFO actix_server::builder: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+02:34:28  INFO backend: src\main.rs:28: Listening on http://127.0.0.1:8041/
+02:34:28  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+02:34:28  INFO actix_server::server: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041
+02:35:27  INFO actix_web::middleware::logger: C:\Users\sergi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/state HTTP/1.1" 200 132 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.000260    

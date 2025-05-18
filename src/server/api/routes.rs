@@ -17,6 +17,7 @@ pub fn auth_services(cfg: &mut ServiceConfig) {
     web::scope("/auth")
       .service(handlers::auth::register_user)
       .service(handlers::auth::login)
+      .service(handlers::auth::protected)
       // .service(handlers::login_user)
       // .service(handlers::logout_user),
   );

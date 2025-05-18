@@ -77,6 +77,11 @@ pub async fn health_check() -> impl Responder {
 pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
     let json: SerializableAppState<'_> = data.to_serializable().await;
 
+    let pkey = data.private_key.as_ref();
+    let public_key = data.public_key.as_ref();
+    println!("Lets see the app's private key: {}", hex::encode(pkey));
+    println!("Lets see the app's public key: {}", hex::encode(public_key));
+
     HttpResponse::Ok()
         .content_type("application/json")
         .body(serde_json::to_string(&json).unwrap())
