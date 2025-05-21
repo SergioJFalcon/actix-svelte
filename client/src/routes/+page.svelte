@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { Button } from "$lib/components/ui/button";
 
   let { data, children }: { data: any; children?: any } = $props();
   let counter_data = $state(data.counter);
@@ -24,6 +25,7 @@
   <div class="">
     <p>Counter: {counter_data}</p>
     <button onclick={incrementCounter} class="">Increment Counter</button>
+    <Button onclick={incrementCounter} variant="secondary">Increment</Button>
     <p>Data: {JSON.stringify(data)}</p>
   </div>
 </main>
