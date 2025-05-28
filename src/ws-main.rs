@@ -20,7 +20,6 @@ use windows_service::{
 // Service name
 const SERVICE_NAME: &str = "actix_example";
 // Global flag for shutdown coordination
-pub static RUNNING: AtomicBool = AtomicBool::new(true);
 pub static PAUSED: AtomicBool = AtomicBool::new(false);
 
 // Main service logic

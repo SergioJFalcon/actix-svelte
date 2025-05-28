@@ -1,13 +1,14 @@
-use actix_web::{
-  get,
-  post,
-  web::{Data, Path},
-  HttpResponse, Responder, Result
-};
-use mime_guess;
-use std::sync::atomic::Ordering;
 
-use crate::{server::{SerializableAppState, SharedState, StaticFiles}, PAUSED};
+use actix_web::{
+  get, post, web::{Data, Path, Payload}, HttpRequest, HttpResponse, Responder, Result
+};
+use anyhow::Error;
+use mime_guess;
+use tokio::time::sleep;
+use std::{sync::atomic::Ordering, time::Duration};
+
+use crate::{server::{SerializableAppState, SharedState, StaticFiles}};
+use actix_svelte::{HEALTH_CHECK_HITS, PAUSED};
 
 pub mod auth;
 
@@ -49,20 +50,107 @@ pub async fn serve_static_files(path: Path<String>) -> Result<HttpResponse> {
     }
 }
 
+// #[utoipa::path(
+// 	get,
+// 	path = "/api/health",
+// 	responses(
+// 		(status = 200, description="Returns the health status of the application"),
+// 	)
+// )]
+// #[get("/health")]
+// pub async fn health_check() -> impl Responder {
+//     tracing::event!(target: "backend", tracing::Level::INFO, "Accessing health-check endpoint.");
+//     if PAUSED.load(Ordering::SeqCst) {
+//         HttpResponse::ServiceUnavailable().body("Service is paused")
+//     } else {
+//         // Sleep for 15 seconds to simulate a long-running health check
+//         tracing::event!(target: "backend", tracing::Level::INFO, "Simulating long-running health check. Sleeping for 5 secs.");
+//         tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+
+//         HttpResponse::Ok().body("Service is running")
+//     }
+// }
+
 #[utoipa::path(
-	get,
-	path = "/api/health",
-	responses(
-		(status = 200, description="Returns the health status of the application"),
-	)
+    post,
+    path = "/api/pause",
+    responses(
+        (status = 200, description="Service paused successfully"),
+    )
+)]
+#[post("/pause")]
+pub async fn pause_service() -> impl Responder {
+    println!("Pausing service...");
+    PAUSED.store(true, Ordering::SeqCst);
+    tracing::event!(target: "backend", tracing::Level::INFO, "Service has been PAUSED.");
+    HttpResponse::Ok().body("Service paused")
+}
+
+#[utoipa::path(
+    post,
+    path = "/api/unpause",
+    responses(
+        (status = 200, description="Service unpaused successfully"),
+    )
+)]
+#[post("/unpause")]
+pub async fn unpause_service() -> impl Responder {
+    println!("Unpausing service...");
+    PAUSED.store(false, Ordering::SeqCst);
+    // Reset the health check hits counter when unpausing, so you can re-test the retry logic
+    HEALTH_CHECK_HITS.store(0, Ordering::SeqCst);
+    tracing::event!(target: "backend", tracing::Level::INFO, "Service has been UNPAUSED and health check counter reset.");
+    HttpResponse::Ok().body("Service unpaused")
+}
+
+#[utoipa::path(
+    get,
+    path = "/api/health",
+    responses(
+        (status = 200, description="Returns the health status of the application"),
+        (status = 503, description="Service is paused or temporarily unavailable"),
+        (status = 500, description="Internal Server Error for testing retries"),
+    )
 )]
 #[get("/health")]
-pub async fn health_check() -> impl Responder {
+pub async fn health_check(_data: Data<SharedState>) -> impl Responder {
+    println!("Health check endpoint hit");
     tracing::event!(target: "backend", tracing::Level::INFO, "Accessing health-check endpoint.");
+    println!("Health check hit count: {}", HEALTH_CHECK_HITS.load(Ordering::SeqCst));
+    // Increment the global health check hit counter
+    let hits: usize = HEALTH_CHECK_HITS.fetch_add(1, Ordering::SeqCst);
+    println!("Health check hit count after increment: {}", hits);
+
+    // Scenario 1: Service is paused
     if PAUSED.load(Ordering::SeqCst) {
-        HttpResponse::ServiceUnavailable().body("Service is paused")
-    } else {
-        HttpResponse::Ok().body("Service is running")
+        tracing::event!(target: "backend", tracing::Level::WARN, "Service is paused, returning 503.");
+        return HttpResponse::ServiceUnavailable().body("Service is paused");
+    }
+
+    // Scenario 2: Simulate transient errors for the first few requests
+    match hits {
+        0 => { // First hit
+            tracing::event!(target: "backend", tracing::Level::WARN, "First hit: Simulating 503 Service Unavailable.");
+            // Simulate a delay to mimic a slow service
+            println!("Simulating a delay for the first hit...");
+            sleep(Duration::from_secs(1)).await; // Add a small delay to simulate network latency
+            HttpResponse::ServiceUnavailable().body("Service is temporarily unavailable (first hit)")
+        }
+        1 => { // Second hit
+            tracing::event!(target: "backend", tracing::Level::WARN, "Second hit: Simulating 500 Internal Server Error.");
+            // Simulate a delay to mimic a slow service
+            println!("Simulating a delay for the second hit...");
+            sleep(Duration::from_secs(1)).await; // Add a small delay
+            HttpResponse::InternalServerError().body("Internal Server Error (second hit)")
+        }
+        _ => { // Subsequent hits
+            // Scenario 3: Simulate a long-running but successful health check
+            tracing::event!(target: "backend", tracing::Level::INFO, "Simulating long-running health check. Sleeping for 5 secs.");
+            println!("Simulating a long-running health check for subsequent hits...");
+            // Sleep for 5 seconds to simulate a long-running health check
+            sleep(Duration::from_secs(5)).await; // This will trigger the Python timeout if less than 5s
+            HttpResponse::Ok().body("Service is running (after retries)")
+        }
     }
 }
 
@@ -75,12 +163,19 @@ pub async fn health_check() -> impl Responder {
 )]
 #[get("state")]
 pub async fn get_app_state(data: Data<SharedState>) -> impl Responder {
+    tracing::event!(target: "backend", tracing::Level::INFO, "Accessing application state endpoint.");
     let json: SerializableAppState<'_> = data.to_serializable().await;
 
-    let pkey = data.private_key.as_ref();
-    let public_key = data.public_key.as_ref();
+    let pkey: &[u8] = data.private_key.as_ref();
+    let public_key: &[u8] = data.public_key.as_ref();
     println!("Lets see the app's private key: {}", hex::encode(pkey));
     println!("Lets see the app's public key: {}", hex::encode(public_key));
+
+    // Print out the HEALTH_CHECK_HITS
+    println!("Health check hits: {}", HEALTH_CHECK_HITS.load(Ordering::SeqCst));
+    // Print out the PAUSED state
+    println!("Service paused state: {}", PAUSED.load(Ordering::SeqCst));
+    tracing::event!(target: "backend", tracing::Level::INFO, "Returning application state.");
 
     HttpResponse::Ok()
         .content_type("application/json")
@@ -106,3 +201,51 @@ pub async fn counter(data: Data<SharedState>) -> impl Responder {
 
     HttpResponse::Ok().body(new_count.to_string())
 }
+
+// #[utoipa::path(
+//   get,
+//   path = "/api/ws/echo",
+//   responses(
+//     (status = 101, description = "WebSocket connection established"),
+//     (status = 400, description = "Bad Request"),
+//     (status = 500, description = "Internal Server Error")
+//   )
+// )]
+// #[get("/ws/echo")]
+// async fn echo(req: HttpRequest, stream: Payload) -> Result<HttpResponse, Error> {
+//     let (res, mut session, stream) = actix_ws::handle(&req, stream)?;
+
+//     let mut stream = stream
+//         .aggregate_continuations()
+//         // aggregate continuation frames up to 1MiB
+//         .max_continuation_size(2_usize.pow(20));
+
+//     // start task but don't wait for it
+//     actix_web::rt::spawn(async move {
+//         // receive messsges from websocket
+//         while let Some(msg) = stream.next().await {
+//             match msg {
+//                 Ok(AggregatedMessage::Text(text)) => {
+//                     // Echo text message
+//                     session.text(text).await.unwrap();
+//                 }
+//                 Ok(AggregatedMessage::Binary(bin)) => {
+//                     // Echo binary message
+//                     session.binary(bin).await.unwrap();
+//                 }
+//                 Ok(AggregatedMessage::Ping(msg)) => {
+//                     // Respond to ping with pong
+//                     session.pong(&msg).await.unwrap();
+//                 }
+
+//                 _ => {
+//                     // Handle other message types or errors
+//                     tracing::warn!("Received unsupported message type or error: {:?}", msg);
+//                 }
+//             }
+//         }
+//     });
+
+//     // respond immediately with response connected to WS session
+//     Ok(res)
+// }

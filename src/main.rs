@@ -1,13 +1,10 @@
 pub mod server;
 pub mod telemetry;
 
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, AtomicUsize};
 
 use tracing_appender::non_blocking::WorkerGuard;
 
-// Global flag for shutdown coordination
-pub static RUNNING: AtomicBool = AtomicBool::new(true);
-pub static PAUSED: AtomicBool = AtomicBool::new(false);
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

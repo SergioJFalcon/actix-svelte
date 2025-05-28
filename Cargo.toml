@@ -15,6 +15,7 @@ actix-cors = "0.7.1"
 actix-files = "0.6.6"
 actix-rt = "2.10.0"
 actix-web = "4.11.0"
+actix-ws = "0.3.0"
 anyhow = "1.0.98"
 dotenvy = "0.15.7"
 futures = "0.3.31"
@@ -30,13 +31,14 @@ tracing-subscriber = { version = "0.3.19", features = ["fmt", "std", "env-filter
 tokio-util = "0.7.15"
 tracing-appender = "0.2.3"
 utoipa = { version="5.3.1", features = ["actix_extras", "chrono", "uuid"]}
-utoipa-swagger-ui = {version="9.0.1", features=["actix-web"]}
-uuid = { version = "1.16.0", features = ["v4"] }
-sqlx = { version = "0.8.3", features = [ "chrono", "sqlite", "runtime-tokio", "tls-native-tls" ] }
+utoipa-swagger-ui = {version="9.0.2", features=["actix-web"]}
+uuid = { version = "1.17.0", features = ["v4"] }
+sqlx = { version = "0.8.6", features = [ "chrono", "sqlite", "runtime-tokio", "tls-native-tls" ] }
 argon2 = { version = "0.5.3", features = ["std"] }
 rusty_paseto = { version = "0.7.2", features = ["batteries_included", "v4_public"] }
 chrono = { version = "0.4.41", features = ["serde"] }
 hex = "0.4.3"
+futures-util = "0.3.31"
 
 [dev-dependencies]
 fake = "4.3.0"

@@ -1,3 +1,5 @@
+use std::sync::atomic::{AtomicBool, AtomicUsize};
+
 use actix_web::{web, HttpRequest};
 use chrono::NaiveDateTime;
 // use rusty_paseto::v4::{
@@ -7,6 +9,10 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use utoipa::ToSchema;
+
+// Global flag for shutdown coordination
+pub static HEALTH_CHECK_HITS: AtomicUsize = AtomicUsize::new(0);
+pub static PAUSED: AtomicBool = AtomicBool::new(false);
 
 #[derive(Clone, Debug, Deserialize, FromRow, Serialize, ToSchema)]
 pub struct User {
