@@ -1,6 +1,6 @@
 use utoipa::{openapi::security::{ApiKey, ApiKeyValue, SecurityScheme}, Modify, OpenApi};
 use super::handlers::{
-		__path_counter, __path_get_app_state, __path_health_check, __path_pause_service, __path_unpause_service,
+		__path_counter, __path_get_app_state, __path_health_check, __path_pause_service, __path_unpause_service, __path_reset_health_check_hits,
 		auth::{__path_register_user, __path_login, __path_protected}
 };
 
@@ -15,11 +15,12 @@ use super::handlers::{
 			get_app_state,
 			counter,
 			health_check,
-      pause_service,
-      unpause_service,
+			pause_service,
+			unpause_service,
 			register_user,
 			login,
-			protected
+			protected,
+			reset_health_check_hits,
 		),
 		components(
 			schemas(

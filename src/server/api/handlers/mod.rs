@@ -1,6 +1,6 @@
 
 use actix_web::{
-  get, post, web::{Data, Path, Payload}, HttpRequest, HttpResponse, Responder, Result
+  get, post, web::{Data, Json, Path, Payload}, HttpRequest, HttpResponse, Responder, Result
 };
 use anyhow::Error;
 use mime_guess;
@@ -148,10 +148,26 @@ pub async fn health_check(_data: Data<SharedState>) -> impl Responder {
             tracing::event!(target: "backend", tracing::Level::INFO, "Simulating long-running health check. Sleeping for 5 secs.");
             println!("Simulating a long-running health check for subsequent hits...");
             // Sleep for 5 seconds to simulate a long-running health check
-            sleep(Duration::from_secs(5)).await; // This will trigger the Python timeout if less than 5s
+            sleep(Duration::from_secs(3)).await; // This will trigger the Python timeout if less than 5s
             HttpResponse::Ok().body("Service is running (after retries)")
         }
     }
+}
+
+#[utoipa::path(
+    post,
+    path = "/api/reset-health-hits",
+    responses(
+        (status = 200, description="Health check hits counter reset successfully"),
+    )
+)]
+#[post("/reset-health-hits")]
+pub async fn reset_health_check_hits() -> impl Responder {
+    println!("Resetting health check hits counter...");
+    // Reset the health check hits counter
+    HEALTH_CHECK_HITS.store(0, Ordering::SeqCst);
+    tracing::event!(target: "backend", tracing::Level::INFO, "Health check hits counter reset.");
+    HttpResponse::Ok().body("Health check hits counter reset")
 }
 
 #[utoipa::path(
@@ -249,3 +265,23 @@ pub async fn counter(data: Data<SharedState>) -> impl Responder {
 //     // respond immediately with response connected to WS session
 //     Ok(res)
 // }
+
+#[utoipa::path(
+	post,
+	path = "/api/counter",
+  request_body = serde_json::Value,
+	responses(
+		(status = 200, description="Returns the updated counter value"),
+	),
+	tag = "counter"
+)]
+#[post("/test_value")]
+pub async fn test_value(body: Json<serde_json::Value>) -> impl Responder {
+    // Simulate some processing
+    sleep(Duration::from_secs(5)).await;
+
+    // Return a simple response
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .body(serde_json::to_string(&body).unwrap())
+}

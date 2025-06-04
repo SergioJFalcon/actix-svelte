@@ -1,0 +1,13 @@
+14:45:55  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333: SIGINT received; starting forced shutdown
+14:45:55  INFO actix_server::accept: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143: accept thread stopped
+14:45:55  INFO actix_server::worker: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593: shutting down idle worker
+17:12:53  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 14516
+17:12:53  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+17:12:53  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+17:12:53  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+17:12:53 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+17:12:53  INFO actix_svelte: src\main.rs:15: Logging initialized successfully
+17:12:53  INFO actix_server::builder: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+17:12:53  INFO backend: src\main.rs:25: Listening on http://127.0.0.1:8041/
+17:12:53  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+17:12:53  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041

@@ -10,6 +10,8 @@ pub fn app_services(cfg: &mut ServiceConfig) {
   cfg.service(handlers::counter);
   cfg.service(handlers::pause_service);
   cfg.service(handlers::unpause_service);
+  cfg.service(handlers::reset_health_check_hits);
+  cfg.service(handlers::test_value);
 }
 
 /// #### Authentication Services

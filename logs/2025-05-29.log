@@ -1,0 +1,68 @@
+08:44:44  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 33632
+08:44:44  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+08:44:44  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+08:44:44  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+08:44:44 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+08:44:44  INFO actix_svelte: src\main.rs:15: Logging initialized successfully
+08:44:44  INFO actix_server::builder: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+08:44:44  INFO backend: src\main.rs:25: Listening on http://127.0.0.1:8041/
+08:44:44  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+08:44:44  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041
+08:47:01  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/ HTTP/1.1" 200 734 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.026060    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-ui.css HTTP/1.1" 200 152071 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.008716    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/index.css HTTP/1.1" 200 202 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.002232    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-ui-bundle.js HTTP/1.1" 200 1452753 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.150378    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-ui-standalone-preset.js HTTP/1.1" 200 230293 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.181064    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/swagger-initializer.js HTTP/1.1" 200 528 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.039437    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api-docs/openapi.json HTTP/1.1" 200 2630 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.000966    
+08:47:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/swagger-ui/favicon-32x32.png HTTP/1.1" 200 628 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.003547    
+08:47:11  INFO backend: src\server\api\handlers\mod.rs:182: Accessing application state endpoint.
+08:47:11  INFO backend: src\server\api\handlers\mod.rs:194: Returning application state.
+08:47:11  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/state HTTP/1.1" 200 93 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 0.003019    
+08:47:19  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+08:47:19  WARN backend: src\server\api\handlers\mod.rs:133: First hit: Simulating 503 Service Unavailable.
+08:47:20  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 503 46 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 1.011499    
+08:47:25  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+08:47:25  WARN backend: src\server\api\handlers\mod.rs:140: Second hit: Simulating 500 Internal Server Error.
+08:47:26  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 500 34 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 1.005527    
+08:47:29  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+08:47:29  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+08:47:34  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 5.014937    
+08:47:35  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+08:47:35  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+08:47:40  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 5.003469    
+08:47:40  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+08:47:40  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+08:47:45  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 5.011559    
+09:40:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/analytics/data?date_range=1h&sensors=temperature,%20humidity,%20pressure&tz_offset=-240 HTTP/1.1" 404 0 "-" "PostmanRuntime/7.43.4" 0.001145    
+09:45:06  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333: SIGINT received; starting forced shutdown
+09:45:06  INFO actix_server::worker: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593: shutting down idle worker
+09:45:06  INFO actix_server::accept: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143: accept thread stopped
+09:46:16  INFO actix_svelte::telemetry: src\telemetry.rs:84: Service started with PID: 2732
+09:46:16  INFO actix_svelte::telemetry: src\telemetry.rs:85: Service version: 0.1.0 starting... version="0.1.0"
+09:46:16  INFO actix_svelte::telemetry: src\telemetry.rs:92: This is an info message I want displayed in the log file.
+09:46:16  WARN actix_svelte::telemetry: src\telemetry.rs:93: This is a warning message I want displayed in the log file.
+09:46:16 ERROR actix_svelte::telemetry: src\telemetry.rs:94: This is an error message I want displayed in the log file.
+09:46:16  INFO actix_svelte: src\main.rs:15: Logging initialized successfully
+09:46:16  INFO actix_server::builder: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310: starting 1 workers
+09:46:16  INFO backend: src\main.rs:25: Listening on http://127.0.0.1:8041/
+09:46:16  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:192: Tokio runtime found; starting in existing Tokio runtime
+09:46:16  INFO actix_server::server: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197: starting service: "actix-web-service-127.0.0.1:8041", workers: 1, listening on: 127.0.0.1:8041
+10:10:24  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+10:10:24  WARN backend: src\server\api\handlers\mod.rs:133: First hit: Simulating 503 Service Unavailable.
+10:10:25  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 503 46 "-" "python-requests/2.27.1" 1.006344    
+10:10:25  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+10:10:25  WARN backend: src\server\api\handlers\mod.rs:140: Second hit: Simulating 500 Internal Server Error.
+10:10:26  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 500 34 "-" "python-requests/2.27.1" 1.006655    
+10:10:36  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+10:10:36  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+10:10:41  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "-" "python-requests/2.27.1" 5.013942    
+11:01:18  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+11:01:18  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+11:01:23  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "http://127.0.0.1:8041/api/swagger-ui/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" 5.023295    
+11:35:57  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+11:35:57  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+11:36:02  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "-" "python-requests/2.27.1" 5.009997    
+11:39:56  INFO backend: src\server\api\handlers\mod.rs:118: Accessing health-check endpoint.
+11:39:56  INFO backend: src\server\api\handlers\mod.rs:148: Simulating long-running health check. Sleeping for 5 secs.
+11:40:01  INFO actix_web::middleware::logger: C:\Users\sfalcon\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-web-4.11.0\src\middleware\logger.rs:450: 127.0.0.1 "GET /api/health HTTP/1.1" 200 34 "-" "python-requests/2.27.1" 5.011184    
