@@ -10,6 +10,10 @@ publish = false
 version = "0.1.0"
 default-run = "actix-svelte"
 
+[[bin]]
+name = "openapi-generator"
+path = "src/bin/openapi_generator.rs"
+
 [dependencies]
 actix-cors = "0.7.1"
 actix-files = "0.6.6"

@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, fs};
 use std::process::Command;
 
 fn main() -> std::io::Result<()> {
@@ -19,6 +19,7 @@ fn main() -> std::io::Result<()> {
     println!("cargo:rerun-if-changed=client/static/**");
     println!("cargo:rerun-if-changed=client/svelte.config.js");
     println!("cargo:rerun-if-changed=.env");
+    println!("cargo:rerun-if-changed=src/bin/openapi_generator.rs");
 
     if !check_program_installed("pnpm") {
         panic!("pnpm is not installed! install it first.");
@@ -27,6 +28,53 @@ fn main() -> std::io::Result<()> {
     #[cfg(not(debug_assertions))]
     {  
         let _ = build_client();
+    }
+
+     // 2. Generate the openapi.json spec.
+    //    We run our `openapi-generator` binary and capture its stdout.
+    println!("cargo:warning=Generating OpenAPI spec...");
+    let output = Command::new("cargo")
+        .args(&["run", "--bin", "openapi-generator"])
+        .output()
+        .expect("Failed to run openapi-generator binary");
+
+    if !output.status.success() {
+        // If the command failed, print the error and stop the build.
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        panic!("openapi-generator failed: {}", stderr);
+    }
+    
+    // Write the captured stdout to the `openapi.json` file.
+    let spec = String::from_utf8(output.stdout).expect("Invalid UTF-8 from openapi-generator");
+    fs::write("openapi.json", spec).expect("Failed to write openapi.json");
+    println!("cargo:warning=Successfully generated openapi.json.");
+
+    // 3. Generate the TypeScript client using orval.
+    //    We assume `orval` is installed in the `./web` directory.
+    //    We run `npx orval` from the root of the project.
+    println!("cargo:warning=Generating TypeScript client with orval...");
+    
+    // Check if orval is installed
+    let orval_check = Command::new("npm")
+        .args(&["list", "orval"])
+        .current_dir("./client") // Run npm list inside the web directory
+        .output()
+        .expect("Failed to check for orval installation. Is npm installed?");
+        
+    if !orval_check.status.success() {
+        println!("cargo:warning=orval not found or `npm list` failed. Skipping TS client generation.");
+        return Ok(());
+    }
+
+    let orval_status = Command::new("npx")
+        .arg("orval")
+        .status() // We just need to know if it succeeded
+        .expect("Failed to execute npx orval. Is Node.js/npx installed?");
+
+    if orval_status.success() {
+        println!("cargo:warning=Successfully generated TypeScript client at ./web/src/lib/client.ts");
+    } else {
+        panic!("npx orval command failed. Check orval configuration and ensure openapi.json is valid.");
     }
 
     Ok(())
